@@ -19,10 +19,10 @@ jobs:
           go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Init swagger
-        run: swag i -g cmd/timevise.go
+        run: swag i -g cmd/app.go
 
       - name: Build
-        run: go build -v cmd/timevise.go
+        run: go build -v cmd/app.go
 
       - name: Test
         run: go test -v ./...
