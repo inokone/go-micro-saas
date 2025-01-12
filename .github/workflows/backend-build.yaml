@@ -1,0 +1,28 @@
+name: backend
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+      
+      - name: Install dependencies
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Init swagger
+        run: swag i -g cmd/timevise.go
+
+      - name: Build
+        run: go build -v cmd/timevise.go
+
+      - name: Test
+        run: go test -v ./...
