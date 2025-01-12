@@ -18,8 +18,13 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	docs "github.com/inokone/go-micro-saas/api"
-	"github.com/inokone/go-micro-saas/db"
+	"github.com/inokone/go-micro-saas/internal/auth/account"
+	"github.com/inokone/go-micro-saas/internal/auth/role"
+	"github.com/inokone/go-micro-saas/internal/auth/user"
 	"github.com/inokone/go-micro-saas/internal/common"
+	"github.com/inokone/go-micro-saas/internal/mail"
+	"github.com/inokone/go-micro-saas/internal/notification"
+	"github.com/inokone/go-micro-saas/internal/routes"
 )
 
 var (
@@ -28,33 +33,31 @@ var (
 	DB      *sqlx.DB
 )
 
-func initApp(path string) {
-	var err error
-	Config, err = common.LoadConfig(path)
-	if err != nil {
-		log.WithError(err).Error("Failed to load application configuration.")
-		os.Exit(1)
-	}
-	common.InitLogging(Config.Log)
-	DB, err = db.InitDB(Config.DB)
-	if err != nil {
-		log.WithError(err).Error("Failed to connect to database.")
-		os.Exit(1)
-	}
-	initStorers()
-}
-
 func initStorers() {
 	storers.Roles = role.NewPostgresStorer(DB)
 	storers.Users = user.NewPostgresStorer(DB, storers.Roles)
 	storers.Accounts = account.NewPostgresStorer(DB)
-	storers.History = history.NewPostgresStorer(DB)
 }
 
-func App(path string) {
-	initApp(path)
+func App(c *common.AppConfig) {
+	Config = c
+	initStorers()
+
+	// Listen OS for signals - graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	listenOS(cancel)
+
+	ps := pubsub.New[string, common.Event](0)
+
+	startNotificationService(ctx, ps)
 
 	startGin(ps)
+}
+
+func startNotificationService(ctx context.Context, ps *pubsub.PubSub[string, common.Event]) {
+	ch := ps.Sub(common.NotificationTopic)
+	s := notification.NewService(ch, mail.NewService(Config.Mail, ps))
+	s.Start(ctx)
 }
 
 func startGin(ps *pubsub.PubSub[string, common.Event]) {

@@ -1,0 +1,602 @@
+basePath: /api/v1
+definitions:
+  account.ConfirmationResend:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  account.PasswordChange:
+    properties:
+      new:
+        type: string
+      old:
+        type: string
+    required:
+    - new
+    - old
+    type: object
+  account.PasswordReset:
+    properties:
+      password:
+        type: string
+      token:
+        type: string
+    required:
+    - password
+    - token
+    type: object
+  account.Recovery:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  common.Event:
+    properties:
+      data: {}
+      id:
+        type: string
+      time:
+        type: string
+      type:
+        type: string
+      user:
+        type: string
+    type: object
+  common.Health:
+    properties:
+      status:
+        type: string
+      version:
+        type: string
+    type: object
+  common.StatusMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  role.ProfileRole:
+    properties:
+      id:
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      quota:
+        type: integer
+    required:
+    - name
+    type: object
+  user.Credentials:
+    properties:
+      captcha_token:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      password:
+        type: string
+    required:
+    - captcha_token
+    - email
+    - password
+    type: object
+  user.Profile:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      first_name:
+        maxLength: 255
+        type: string
+      id:
+        type: string
+      last_name:
+        maxLength: 255
+        type: string
+      role:
+        $ref: '#/definitions/role.ProfileRole'
+      source:
+        maxLength: 100
+        type: string
+      status:
+        maxLength: 100
+        type: string
+    required:
+    - email
+    type: object
+  user.SetEnabled:
+    properties:
+      enabled:
+        type: boolean
+      id:
+        type: string
+    type: object
+  user.SignupRequest:
+    properties:
+      captcha_token:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      first_name:
+        maxLength: 255
+        type: string
+      last_name:
+        maxLength: 255
+        type: string
+      password:
+        type: string
+    required:
+    - captcha_token
+    - email
+    - password
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact: {}
+  description: Go-micro-SAAS is a web application skeleton to quickly build new SAAS.
+  title: Go-micro-SAAS API
+  version: "0.1"
+paths:
+  /account/confirm:
+    get:
+      consumes:
+      - application/json
+      description: Confirms the email address of the user
+      parameters:
+      - description: Token for the email confirmation
+        format: uuid
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Email confirmation endpoint
+  /account/password/change:
+    put:
+      consumes:
+      - application/json
+      description: Resets the password of the logged in user
+      parameters:
+      - description: The new and old passwords, required to update the password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/account.PasswordChange'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
+  /account/password/reset:
+    put:
+      consumes:
+      - application/json
+      description: Resets the password of the logged in user
+      parameters:
+      - description: The token and new password to reset the current set password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/account.PasswordReset'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Reset password endpoint
+  /account/recover:
+    put:
+      consumes:
+      - application/json
+      description: Send a password reset email to a user
+      parameters:
+      - description: The email to send the account recovery to
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/account.Recovery'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Recover account endpoint
+  /account/resend:
+    put:
+      consumes:
+      - application/json
+      description: Resends email confirmation for an email address.
+      parameters:
+      - description: The email to send the confirmation to
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/account.ConfirmationResend'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Resends email confirmation endpoint
+  /account/signin:
+    post:
+      consumes:
+      - application/json
+      description: Logs in the user, sets up the JWT authorization
+      parameters:
+      - description: Credentials provided for signing in
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User sign in endpoint
+  /account/signout:
+    get:
+      consumes:
+      - application/json
+      description: Logs out of the application, deletes the JWT token uased for authorization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Logout endpoint
+  /account/signup:
+    post:
+      consumes:
+      - application/json
+      description: Signs the user up for the application
+      parameters:
+      - description: User data provided for the signup
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.Profile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User signup endpoint
+  /auth/facebook:
+    get:
+      consumes:
+      - application/json
+      description: Starts Facebook authentication process.
+      produces:
+      - application/json
+      responses: {}
+      summary: Signin is the authentication endpoint. Starts Facebook authentication
+        process.
+  /auth/facebook/redirect:
+    get:
+      consumes:
+      - application/json
+      description: Called by Facebook Auth when we have a result of the authentication
+        process
+      produces:
+      - text/html
+      responses: {}
+      summary: Redirect is the authentication callback endpoint. Authenticates/Registers
+        users, sets up JWT token.
+  /auth/google:
+    get:
+      consumes:
+      - application/json
+      description: Starts Google authentication process.
+      produces:
+      - application/json
+      responses: {}
+      summary: Signin is the authentication endpoint. Starts Google authentication
+        process.
+  /auth/google/redirect:
+    get:
+      consumes:
+      - application/json
+      description: Called by Google Auth when we have a result of the authentication
+        process
+      produces:
+      - text/html
+      responses: {}
+      summary: Redirect is the authentication callback endpoint. Authenticates/Registers
+        users, sets up JWT token.
+  /healthcheck:
+    get:
+      consumes:
+      - application/json
+      description: Returns the status and version of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Health'
+      summary: Health check endpoint of the Schedlue.me app
+  /history:
+    get:
+      consumes:
+      - application/json
+      description: Lists all history events for a timetable
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/common.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: List history events endpoint
+  /roles/:
+    get:
+      consumes:
+      - application/json
+      description: Lists all roles of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Role list endpoint
+  /roles/:id:
+    put:
+      consumes:
+      - application/json
+      description: Updates the settings of a role
+      parameters:
+      - description: ID of the role information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: The new version of the role to use for update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/role.ProfileRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Role update endpoint
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Lists the users of the application.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: List users endpoint
+  /users/:id:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the target user
+      parameters:
+      - description: ID of the user information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User update endpoint
+    put:
+      consumes:
+      - application/json
+      description: Updates the target user
+      parameters:
+      - description: ID of the user information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: The new version of the user information to use for update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.Profile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User update endpoint
+  /users/:id/enabled:
+    put:
+      consumes:
+      - application/json
+      description: Updates the target user
+      parameters:
+      - description: ID of the user information to patch
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Whether the user is enabled to log in and upload photos
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.SetEnabled'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: User enable/disable endpoint
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Gets the current logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Profile'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: Get user profile endpoint
+swagger: "2.0"

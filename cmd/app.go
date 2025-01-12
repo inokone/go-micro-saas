@@ -40,11 +40,11 @@ func main() {
 		config      = flag.String("config", ".", "Path of the configuration folder where the app.env file is. Default: [.]")
 	)
 	flag.Parse()
-	c := common.InitApp(config)
+	c := common.InitApp(*config)
 	if *isMigration {
 		go db.ForceMigration(c.DB)
 	}
 	if *application {
-		app.App(*c)
+		app.App(c)
 	}
 }

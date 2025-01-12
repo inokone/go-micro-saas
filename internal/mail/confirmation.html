@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #555;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Confirm Your Email Address</h1>
+      <p>
+        Thank you for signing up for {{.App}}. To complete your registration,
+        please click the button below to confirm your email address.
+      </p>
+      <a class="btn" href="{{.Link}}">Confirm Email Address</a>
+      <p>If you did not sign up for {{.App}}, please ignore this email.</p>
+    </div>
+  </body>
+</html>

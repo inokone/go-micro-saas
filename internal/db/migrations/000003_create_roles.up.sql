@@ -1,0 +1,3 @@
+INSERT INTO microsaas.roles (role_id, display_name, appointment_quota) VALUES ('b6d0a023-86db-4480-9dd9-532a4d4b1fbb', 'Admin', -1);
+INSERT INTO microsaas.roles (role_id, display_name, appointment_quota) VALUES ('3dae67da-21bd-4c1f-ac35-b3e79c4a4225', 'Customer Admin', 1000);
+INSERT INTO microsaas.roles (role_id, display_name, appointment_quota) VALUES ('0d83a7d4-24e3-4dd4-9b0a-d65379225abc', 'Customer User', 1);
