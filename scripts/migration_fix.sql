@@ -1,0 +1,1 @@
+UPDATE schema_migrations set dirty = false, version = 1;
