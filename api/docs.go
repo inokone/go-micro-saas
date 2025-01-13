@@ -916,6 +916,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "Go-micro-SAAS is a web application skeleton to quickly build new SAAS.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
