@@ -1,0 +1,1 @@
+drop table microsaas.history_events;

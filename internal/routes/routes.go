@@ -8,6 +8,7 @@ import (
 	"github.com/inokone/go-micro-saas/internal/auth/role"
 	"github.com/inokone/go-micro-saas/internal/auth/user"
 	"github.com/inokone/go-micro-saas/internal/common"
+	"github.com/inokone/go-micro-saas/internal/history"
 	"github.com/inokone/go-micro-saas/internal/mail"
 )
 
@@ -16,6 +17,7 @@ type Storers struct {
 	Users    user.Storer
 	Roles    role.Storer
 	Accounts account.Storer
+	History  history.Storer
 }
 
 // InitPrivate is a function to initialize handler mapping for URLs protected with CORS
@@ -32,6 +34,7 @@ func InitPrivate(private *gin.RouterGroup, st Storers, c *common.AppConfig, ps *
 		ac     = account.NewHandler(st.Users, st.Accounts, mailer, c.Auth, rc)
 		u      = user.NewHandler(st.Users)
 		r      = role.NewHandler(st.Roles)
+		h      = history.NewHandler(st.History)
 	)
 
 	private.GET("healthcheck", common.Healthcheck)
@@ -59,6 +62,7 @@ func InitPrivate(private *gin.RouterGroup, st Storers, c *common.AppConfig, ps *
 		g.PUT("/:id", m.Validate, u.Update)
 		g.PATCH("/:id", m.ValidateAdmin, u.Patch)
 		g.PUT("/:id/enabled", m.ValidateAdmin, u.SetEnabled)
+		g.GET("/:id/history", m.Validate, h.List)
 	}
 
 	g = private.Group("/roles", m.ValidateAdmin)

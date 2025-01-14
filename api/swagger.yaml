@@ -412,33 +412,6 @@ paths:
           schema:
             $ref: '#/definitions/common.Health'
       summary: Health check endpoint of the Schedlue.me app
-  /history:
-    get:
-      consumes:
-      - application/json
-      description: Lists all history events for a timetable
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/common.Event'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/common.StatusMessage'
-      summary: List history events endpoint
   /roles/:
     get:
       consumes:
@@ -582,6 +555,33 @@ paths:
           schema:
             $ref: '#/definitions/common.StatusMessage'
       summary: User enable/disable endpoint
+  /users/:id/history:
+    get:
+      consumes:
+      - application/json
+      description: Lists all history events for a timetable
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/common.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/common.StatusMessage'
+      summary: List history events endpoint
   /users/profile:
     get:
       consumes:

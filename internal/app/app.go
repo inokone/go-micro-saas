@@ -22,6 +22,7 @@ import (
 	"github.com/inokone/go-micro-saas/internal/auth/role"
 	"github.com/inokone/go-micro-saas/internal/auth/user"
 	"github.com/inokone/go-micro-saas/internal/common"
+	"github.com/inokone/go-micro-saas/internal/history"
 	"github.com/inokone/go-micro-saas/internal/mail"
 	"github.com/inokone/go-micro-saas/internal/notification"
 	"github.com/inokone/go-micro-saas/internal/routes"
@@ -37,6 +38,7 @@ func initStorers() {
 	storers.Roles = role.NewPostgresStorer(DB)
 	storers.Users = user.NewPostgresStorer(DB, storers.Roles)
 	storers.Accounts = account.NewPostgresStorer(DB)
+	storers.History = history.NewPostgresStorer(DB)
 }
 
 func App(c *common.AppConfig) {
@@ -49,6 +51,8 @@ func App(c *common.AppConfig) {
 
 	ps := pubsub.New[string, common.Event](0)
 
+	startHistoryService(ctx, ps)
+
 	startNotificationService(ctx, ps)
 
 	startGin(ps)
@@ -57,6 +61,12 @@ func App(c *common.AppConfig) {
 func startNotificationService(ctx context.Context, ps *pubsub.PubSub[string, common.Event]) {
 	ch := ps.Sub(common.NotificationTopic)
 	s := notification.NewService(ch, mail.NewService(Config.Mail, ps))
+	s.Start(ctx)
+}
+
+func startHistoryService(ctx context.Context, ps *pubsub.PubSub[string, common.Event]) {
+	ch := ps.Sub(common.HistoryTopic)
+	s := history.NewService(ch, history.NewPostgresStorer(DB))
 	s.Start(ctx)
 }
 
