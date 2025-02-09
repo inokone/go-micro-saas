@@ -1,89 +1,114 @@
 # Go-micro-SAAS
 
-A template for Micro SAAS applications, with a variety of implemented and planned [features](/docs/featureset.md).
+A template for building Micro-SAAS (Software as a Service) applications in Go. See our [feature list](/docs/featureset.md) for implemented and planned capabilities.
 
-## Environment setup
+## Development Setup
 
-Before starting backend development the following need to be set up:
+### Prerequisites
 
-```sh
-brew install go                                    # Install Go
-
-go install github.com/swaggo/swag/cmd/swag@latest  # OpenAPI spec generator
-go install golang.org/x/tools/cmd/goimports@latest # Reformatting tool
-
-brew tap golangci/tap                              # Setting source for brew, then
-brew install golangci/tap/golangci-lint            # Static code anlanysis for Go
-```
-
-## How to start development
-
-Building the application is not explicitly required for development. The following commands can be used:
+Install the following tools:
 
 ```sh
-go mod download                            # Download Go dependencies
-~/go/bin/swag i -g cmd/app.go -o api       # Generate OpenAPI spec files
-go build main.go                           # Build app
+# Install Go
+brew install go
 
-golangci-lint run                          # Run static code analysis
+# Install development tools
+go install github.com/swaggo/swag/cmd/swag@latest    # OpenAPI spec generator
+go install golang.org/x/tools/cmd/goimports@latest   # Code formatting tool
+go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest  # Database migration tool
+
+# Install linter
+brew tap golangci/tap
+brew install golangci/tap/golangci-lint
 ```
 
-On OSX if `swag` is not working you might have to add `~/go/bin` to your PATH.
+Note: On macOS, if `swag` command is not found, add `~/go/bin` to your PATH.
 
-## How to run tests
+### Development Workflow
 
+1. Install dependencies:
 ```sh
-go test -v ./...   # Run unit tests
+go mod download
 ```
 
-## CI
+2. Generate OpenAPI specification:
+```sh
+~/go/bin/swag init -g cmd/app.go -o api
+```
 
-The project has Github actions set up for every push.
-Steps included
+3. Run tests:
+```sh
+go test -v ./...
+```
 
-- [Backend](.github/workflows/backend-build.yaml)
-  - OpenAPI re-generation
-  - Build
-  - Run unit tests
-- [Backend Static code analysis](.github/workflows/backend-lint.yml)
+4. Run linter:
+```sh
+golangci-lint run
+```
 
-## How to run the application on local environment
+### Running Locally
 
-First, you need a running Postgres database:
-
+1. Start Postgres database:
 ```sh
 docker run --name postgres --env-file configs/postgres.env -p 5432:5432 -d postgres
 ```
 
-Then run the application with the following:
-
+2. Run the application:
 ```sh
-go run cmd/app.go --migrate --config configs/  # Launch app including DB migration
+# Run with database migrations
+go run cmd/app.go --migrate --config configs/
 ```
 
-### Build docker image
+## Database Management
+
+### Creating New Migrations
 
 ```sh
-docker build -t go-micro-saas -f deployments/Dockerfile .  # Build
+migrate create -ext sql -dir db/migrations -seq migration_name
 ```
 
-### Run docker image in production
+### Running Migrations Manually
 
 ```sh
-docker run -d --restart always -p 8080:8080 -v ~/production:/etc/microsaas --mount type=tmpfs,destination=/tmp/files,tmpfs-size=4096 --mount type=bind,source=/etc/ssl/certs,target=/etc/ssl/certs go-micro-saas &   # on compute
-```
+# Migrate up to latest version
+migrate -database "postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable" -path db/migrations up
 
-## Miscellaneous
-
-### How to create new database migration
-
-```sh
-migrate create -ext sql -dir db/migrations -seq init_schema
-```
-
-### How to run database migrations
-
-```sh
-migrate -database "postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable" -path db/migrations up # Migrate to latest version
+# Rollback all migrations
 migrate -database "postgresql://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable" -path db/migrations down -all
 ```
+
+## Docker Support
+
+### Building Image
+
+```sh
+docker build -t go-micro-saas -f deployments/Dockerfile .
+```
+
+### Production Deployment
+
+```sh
+docker run -d \
+  --restart always \
+  -p 8080:8080 \
+  -v ~/production:/etc/microsaas \
+  --mount type=tmpfs,destination=/tmp/files,tmpfs-size=4096 \
+  --mount type=bind,source=/etc/ssl/certs,target=/etc/ssl/certs \
+  go-micro-saas
+```
+
+## Continuous Integration
+
+The project uses GitHub Actions for CI/CD:
+
+- [Backend Pipeline](.github/workflows/backend-build.yaml)
+  - OpenAPI specification generation
+  - Build verification
+  - Unit tests
+- [Code Quality](.github/workflows/backend-lint.yml)
+  - Static code analysis
+
+## Documentation
+
+- [Feature Set](/docs/featureset.md)
+- [Deployment Guide](/docs/deployment.md)
