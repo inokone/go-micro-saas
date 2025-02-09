@@ -27,21 +27,25 @@ Note: On macOS, if `swag` command is not found, add `~/go/bin` to your PATH.
 ### Development Workflow
 
 1. Install dependencies:
+
 ```sh
 go mod download
 ```
 
 2. Generate OpenAPI specification:
+
 ```sh
 ~/go/bin/swag init -g cmd/app.go -o api
 ```
 
 3. Run tests:
+
 ```sh
 go test -v ./...
 ```
 
 4. Run linter:
+
 ```sh
 golangci-lint run
 ```
@@ -49,11 +53,13 @@ golangci-lint run
 ### Running Locally
 
 1. Start Postgres database:
+
 ```sh
 docker run --name postgres --env-file configs/postgres.env -p 5432:5432 -d postgres
 ```
 
 2. Run the application:
+
 ```sh
 # Run with database migrations
 go run cmd/app.go --migrate --config configs/
