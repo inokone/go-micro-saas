@@ -136,12 +136,21 @@ func createRouter(ps *pubsub.PubSub[string, common.Event]) *gin.Engine {
 }
 
 func setupRoutes(router *gin.Engine, ps *pubsub.PubSub[string, common.Event]) {
+	privateCors := cors.Config{
+		AllowOrigins:     []string{"http://localhost", "http://127.0.0.1", "https://example.com"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Cookie"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization", "Set-Cookie"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
 	public := router.Group("/api/public/v1")
 	public.Use(cors.Default())
 	routes.InitPublic(public, storers, Config)
-	router.Use(SubdomainAllowingCORS())
 
 	private := router.Group("/api/v1")
+	private.Use(cors.New(privateCors))
 	err := routes.InitPrivate(private, storers, Config, ps)
 	if err != nil {
 		log.WithError(err).Error("Failed to initialize the application")
