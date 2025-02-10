@@ -13,14 +13,6 @@ import (
 	"github.com/inokone/go-micro-saas/internal/mail"
 )
 
-var testEvent = common.Event{
-	ID:   uuid.New(),
-	Type: "test_event",
-	Time: time.Now(),
-	User: uuid.New(),
-	Data: map[string]string{"test": "data"},
-}
-
 // MockMailService implements the mail.Mailer interface for testing
 type MockMailService struct {
 	mock.Mock
