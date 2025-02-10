@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -82,8 +83,18 @@ type AppConfig struct {
 	Path      string
 }
 
+func configPaths(path string) [4]string {
+	return [4]string{path, ".", ConfigFolder, "$HOME/.microsaas"}
+}
+
 func (c AppConfig) PathFor(file string) string {
-	return filepath.Join(ConfigFolder, file)
+	for _, confPath := range configPaths(c.Path) {
+		target := filepath.Join(confPath, file)
+		if _, err := os.Stat(target); err == nil {
+			return target
+		}
+	}
+	panic(fmt.Sprintf("Configuration file %s not found", file))
 }
 
 // loadConfig is a function loading the configuration from app.env file in the runtime directory or environment variables.
@@ -96,7 +107,7 @@ func loadConfig(path string) (*AppConfig, error) {
 	var wb WebConfig
 	var an AnalyticsConfig
 
-	for _, confPath := range [4]string{path, ".", ConfigFolder, "$HOME/.microsaas"} {
+	for _, confPath := range configPaths(path) {
 		viper.AddConfigPath(confPath)
 	}
 	viper.SetConfigType("env")

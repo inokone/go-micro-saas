@@ -9,13 +9,14 @@ import (
 
 func SubdomainAllowingCORS() gin.HandlerFunc {
 
-	const domainName = "timevise.com"
+	const domainName = "example.com"
 
 	return func(c *gin.Context) {
 		origin := c.GetHeader("Origin")
 		isHttp := strings.HasPrefix(origin, "http://")
 		isHttps := strings.HasPrefix(origin, "https://")
 
+		// Allow requests from localhost:3000 (DEVELOPMENT) and example.com (PRODUCTION)
 		if origin != "" &&
 			((isHttp && (strings.HasSuffix(origin, ".localhost:3000") || strings.HasSuffix(origin, "/localhost:3000"))) ||
 
