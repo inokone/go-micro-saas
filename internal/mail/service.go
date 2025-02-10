@@ -26,10 +26,22 @@ var ct string
 //go:embed "passwordreset.html"
 var pt string
 
+// Dialer is an interface for sending emails
+type Dialer interface {
+	DialAndSend(msg ...*mail.Message) error
+}
+
+// Mailer defines the interface for sending different types of emails
+type Mailer interface {
+	Send(r *SendRequest) error
+	EmailConfirmation(recipient string, confirmationURL string) error
+	PasswordReset(recipient string, resetURL string) error
+}
+
 // Service is a struct for a service sending mails for our users.
 type Service struct {
 	config    *common.MailConfig
-	dialer    *mail.Dialer
+	dialer    Dialer
 	ps        *pubsub.PubSub[string, common.Event]
 	templates map[string]*template.Template
 }

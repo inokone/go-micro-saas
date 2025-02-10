@@ -10,10 +10,10 @@ import (
 
 type Service struct {
 	source chan common.Event
-	mailer *mail.Service
+	mailer mail.Mailer
 }
 
-func NewService(source chan common.Event, mailer *mail.Service) *Service {
+func NewService(source chan common.Event, mailer mail.Mailer) *Service {
 	return &Service{
 		source: source,
 		mailer: mailer,
