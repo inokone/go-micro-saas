@@ -68,7 +68,7 @@ func (m *MockStorer) Stats() (Stats, error) {
 	return args.Get(0).(Stats), args.Error(1)
 }
 
-func TestNewUser(t *testing.T) {
+func TestNewUserSetsMembers(t *testing.T) {
 	tests := []struct {
 		name      string
 		email     string
@@ -105,7 +105,7 @@ func TestNewUser(t *testing.T) {
 	}
 }
 
-func TestVerifyPassword(t *testing.T) {
+func TestVerifyPasswordSuccessfulForMatching(t *testing.T) {
 	user := &User{}
 	password := "testpassword123"
 
@@ -113,10 +113,19 @@ func TestVerifyPassword(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.True(t, user.VerifyPassword(password))
+}
+
+func TestVerifyPasswordFailsForNonMatching(t *testing.T) {
+	user := &User{}
+	password := "testpassword123"
+
+	err := user.SetPassword(password)
+	assert.NoError(t, err)
+
 	assert.False(t, user.VerifyPassword("wrongpassword"))
 }
 
-func TestIsActive(t *testing.T) {
+func TestIsActiveReturnsTrueForEnabledAndConfirmedUser(t *testing.T) {
 	tests := []struct {
 		name     string
 		user     User
@@ -155,7 +164,7 @@ func TestIsActive(t *testing.T) {
 	}
 }
 
-func TestAsProfile(t *testing.T) {
+func TestAsProfileRetainsFields(t *testing.T) {
 	userID := uuid.New()
 	roleID := uuid.New()
 	testUser := User{
@@ -183,7 +192,7 @@ func TestAsProfile(t *testing.T) {
 	assert.Equal(t, testUser.Source, profile.Source)
 }
 
-func TestAsAdminView(t *testing.T) {
+func TestAsAdminViewRetainsFields(t *testing.T) {
 	now := time.Now()
 	deletedTime := null.TimeFrom(now.Add(time.Hour))
 	userID := uuid.New()

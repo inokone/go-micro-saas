@@ -31,7 +31,7 @@ func (m *MockStorer) List() ([]Role, error) {
 	return args.Get(0).([]Role), args.Error(1)
 }
 
-func TestIsAdmin(t *testing.T) {
+func TestIsAdminReturnsTrueOnlyForAdminRole(t *testing.T) {
 	tests := []struct {
 		name     string
 		role     Role
@@ -67,7 +67,7 @@ func TestIsAdmin(t *testing.T) {
 	}
 }
 
-func TestAsProfileRole(t *testing.T) {
+func TestAsProfileRoleRetainsFields(t *testing.T) {
 	roleID := uuid.New()
 	testRole := &Role{
 		ID:               roleID,
@@ -82,12 +82,7 @@ func TestAsProfileRole(t *testing.T) {
 	assert.Equal(t, testRole.DisplayName, profileRole.DisplayName)
 }
 
-func TestPredefinedRoles(t *testing.T) {
-	// Test that predefined role UUIDs are valid and different
-	assert.NotEqual(t, RoleAdmin, RoleCustomerAdmin)
-	assert.NotEqual(t, RoleAdmin, RoleCustomerUser)
-	assert.NotEqual(t, RoleCustomerAdmin, RoleCustomerUser)
-
+func TestPredefinedRolesUnchanged(t *testing.T) {
 	// Test that predefined role UUIDs are valid
 	assert.Equal(t, "b6d0a023-86db-4480-9dd9-532a4d4b1fbb", RoleAdmin.String())
 	assert.Equal(t, "3dae67da-21bd-4c1f-ac35-b3e79c4a4225", RoleCustomerAdmin.String())

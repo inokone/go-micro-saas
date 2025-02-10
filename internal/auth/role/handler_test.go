@@ -21,7 +21,7 @@ func setupTestRouter(h *Handler) *gin.Engine {
 	return r
 }
 
-func TestHandler_List(t *testing.T) {
+func TestList200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)
@@ -56,7 +56,7 @@ func TestHandler_List(t *testing.T) {
 	mockStorer.AssertExpectations(t)
 }
 
-func TestHandler_Update(t *testing.T) {
+func TestUpdate200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)
@@ -92,7 +92,7 @@ func TestHandler_Update(t *testing.T) {
 	mockStorer.AssertExpectations(t)
 }
 
-func TestHandler_Update_InvalidInput(t *testing.T) {
+func TestUpdate400ForInvalidInput(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)

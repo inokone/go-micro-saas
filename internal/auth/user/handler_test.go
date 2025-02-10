@@ -22,7 +22,7 @@ func setupTestRouter(h *Handler) *gin.Engine {
 	return r
 }
 
-func TestProfile(t *testing.T) {
+func TestProfile200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)
@@ -62,7 +62,7 @@ func TestProfile(t *testing.T) {
 	assert.Equal(t, testUser.LastName, response.LastName)
 }
 
-func TestList(t *testing.T) {
+func TestList200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)
@@ -105,7 +105,7 @@ func TestList(t *testing.T) {
 	mockStorer.AssertExpectations(t)
 }
 
-func TestPatch(t *testing.T) {
+func TestPatch200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)
@@ -142,7 +142,7 @@ func TestPatch(t *testing.T) {
 	mockStorer.AssertExpectations(t)
 }
 
-func TestSetEnabled(t *testing.T) {
+func TestSetEnabled200ForHappyPath(t *testing.T) {
 	mockStorer := new(MockStorer)
 	handler := NewHandler(mockStorer)
 	router := setupTestRouter(handler)

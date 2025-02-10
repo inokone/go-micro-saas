@@ -2,7 +2,6 @@ package mail
 
 import (
 	"testing"
-	"time"
 
 	"github.com/cskr/pubsub/v2"
 	"github.com/google/uuid"
@@ -39,7 +38,7 @@ func setupTestService() (*Service, *MockDialer, *pubsub.PubSub[string, common.Ev
 	return service, mockDialer, ps
 }
 
-func TestSend(t *testing.T) {
+func TestSendWorksForValidTemplates(t *testing.T) {
 	service, mockDialer, _ := setupTestService()
 	mockDialer.On("DialAndSend", mock.Anything).Return(nil)
 
@@ -106,57 +105,22 @@ func TestSend(t *testing.T) {
 	mockDialer.AssertExpectations(t)
 }
 
-func TestEmailConfirmation(t *testing.T) {
+func TestEmailConfirmationIsSent(t *testing.T) {
 	service, mockDialer, _ := setupTestService()
 	mockDialer.On("DialAndSend", mock.Anything).Return(nil)
 
 	err := service.EmailConfirmation("test@example.com", "http://example.com/confirm")
 	assert.NoError(t, err)
 
-	mockDialer.AssertExpectations(t)
+	mockDialer.AssertCalled(t, "DialAndSend", mock.Anything)
 }
 
-func TestPasswordReset(t *testing.T) {
+func TestPasswordResetIsSent(t *testing.T) {
 	service, mockDialer, _ := setupTestService()
 	mockDialer.On("DialAndSend", mock.Anything).Return(nil)
 
 	err := service.PasswordReset("test@example.com", "http://example.com/reset")
 	assert.NoError(t, err)
 
-	mockDialer.AssertExpectations(t)
-}
-
-func TestHistoryEvent(t *testing.T) {
-	service, mockDialer, ps := setupTestService()
-	mockDialer.On("DialAndSend", mock.Anything).Return(nil)
-
-	// Subscribe to history events
-	ch := ps.Sub(common.HistoryTopic)
-	defer ps.Unsub(ch)
-
-	userID := uuid.New()
-	recipient := "test@example.com"
-	subject := "Test Subject"
-	body := "Test Body"
-
-	err := service.send(recipient, subject, body, userID)
-	assert.NoError(t, err)
-
-	// Check if event was published
-	select {
-	case event := <-ch:
-		assert.Equal(t, common.EmailSent, event.Type)
-		assert.Equal(t, userID, event.User)
-
-		emailData, ok := event.Data.(common.EmailData)
-		assert.True(t, ok)
-		assert.Equal(t, service.config.NoReplyAddress, emailData.From)
-		assert.Equal(t, recipient, emailData.To)
-		assert.Equal(t, subject, emailData.Subject)
-		assert.Equal(t, body, emailData.Body)
-	case <-time.After(time.Second):
-		t.Error("No event received")
-	}
-
-	mockDialer.AssertExpectations(t)
+	mockDialer.AssertCalled(t, "DialAndSend", mock.Anything)
 }

@@ -42,6 +42,7 @@ func (s *Service) Start(ctx context.Context) {
 
 func (s *Service) Send(event *common.Event) error {
 	switch event.Type {
+	// TODO: Handle notification types here
 	default:
 		return nil
 	}
