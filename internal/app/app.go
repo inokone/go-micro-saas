@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/cskr/pubsub/v2"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -118,5 +119,20 @@ func createRouter(ps *pubsub.PubSub[string, common.Event]) *gin.Engine {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	setupRoutes(router, ps)
 	return router
+}
+
+func setupRoutes(router *gin.Engine, ps *pubsub.PubSub[string, common.Event]) {
+	public := router.Group("/api/public/v1")
+	public.Use(cors.Default())
+	routes.InitPublic(public, storers, Config)
+	router.Use(SubdomainAllowingCORS())
+
+	private := router.Group("/api/v1")
+	err := routes.InitPrivate(private, storers, Config, ps)
+	if err != nil {
+		log.WithError(err).Error("Failed to initialize the application")
+		os.Exit(1)
+	}
 }
