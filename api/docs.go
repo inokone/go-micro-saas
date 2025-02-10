@@ -632,7 +632,7 @@ const docTemplate = `{
         },
         "/users/:id/history": {
             "get": {
-                "description": "Lists all history events for a timetable",
+                "description": "Lists all history events for a user",
                 "consumes": [
                     "application/json"
                 ],
