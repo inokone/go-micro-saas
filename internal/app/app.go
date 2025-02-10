@@ -23,6 +23,7 @@ import (
 	"github.com/inokone/go-micro-saas/internal/auth/role"
 	"github.com/inokone/go-micro-saas/internal/auth/user"
 	"github.com/inokone/go-micro-saas/internal/common"
+	"github.com/inokone/go-micro-saas/internal/db"
 	"github.com/inokone/go-micro-saas/internal/history"
 	"github.com/inokone/go-micro-saas/internal/mail"
 	"github.com/inokone/go-micro-saas/internal/notification"
@@ -42,8 +43,19 @@ func initStorers() {
 	storers.History = history.NewPostgresStorer(DB)
 }
 
+func initDB() {
+	var err error
+	DB, err = db.InitDB(Config.DB)
+	if err != nil {
+		log.WithError(err).Error("Failed to connect to database.")
+		os.Exit(1)
+	}
+}
+
 func App(c *common.AppConfig) {
 	Config = c
+
+	initDB()
 	initStorers()
 
 	// Listen OS for signals - graceful shutdown
