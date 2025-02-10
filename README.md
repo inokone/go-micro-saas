@@ -2,6 +2,8 @@
 
 A template for building Micro-SAAS (Software as a Service) applications in Go. See our [feature list](/docs/featureset.md) for implemented and planned capabilities.
 
+Before getting started, make sure to review and set up the required [third-party services and API keys](PREREQUISITES.md).
+
 ## Development Setup
 
 ### Prerequisites
